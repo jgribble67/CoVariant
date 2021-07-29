@@ -11,13 +11,13 @@ import fnmatch
 # parser.add_argment("Experiment", help="Experiment name.")
 # args = parser.parse_args()
 
-sample_list = [line.rstrip('\n') for line in open("/media/denison-thelio/extradrive1/MHV_cl_AZC_JAD_061821/samples.txt")]
+sample_list = [line.rstrip('\n') for line in open("/Users/jennifergribble/Dropbox/NHC_recombination/MA_MHV_NHC_virion/Variants/MA_NHC_samples.txt")]
 # For virus, choose "MHV", "MERS", or "SARS2"
 virus = "MHV"
-wd = "/media/denison-thelio/extradrive1/MHV_cl_AZC_JAD_061821/"
+wd = "/Users/jennifergribble/Dropbox/NHC_recombination/MA_MHV_NHC_virion/Variants/"
 od = wd
-exp = "MHV_cl_AZC_JAD_061821"
-freq_cutoff = 0.01
+exp = "MA_MHV_NHC_virion"
+freq_cutoff = 0
 report = pd.DataFrame(columns=['sample',
                                'unique_variants',
                                'variant_nts',
@@ -91,6 +91,7 @@ for file in os.listdir(wd):
         vcf['variant_r_count'] = pd.to_numeric(vcf['variant_r_count'])
         vcf['variant_total'] = vcf['variant_f_count'] + vcf['variant_r_count']
         vcf = vcf[vcf['frequency'] >= freq_cutoff]
+        length = len(vcf)
         def get_variant_type(reference, variant):
             type = ""
             if reference == "A" and variant == "G":
@@ -236,24 +237,41 @@ for file in os.listdir(wd):
         # elif (virus == "MERS"):
         #     vcf['gene'] = vcf['position'].apply(lambda x: get_MERS_gene(x))
         else:
-            print("No virus gene annotations available for that virus! Please check that you have the correct virus specified. Otherwise, contact your developer to input annotations.")
-        variant_nts = vcf['variant_total'].sum()
-        transition_nts = vcf.loc[vcf['variant_type'] == "transition", 'variant_total'].sum()
-        transversion_nts = vcf.loc[vcf['variant_type'] == "transversion", 'variant_total'].sum()
-        AtoG_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "G")), 'variant_total'].sum()
-        GtoA_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "A")), 'variant_total'].sum()
-        CtoT_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "T")), 'variant_total'].sum()
-        TtoC_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "C")), 'variant_total'].sum()
-        AtoC_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "C")), 'variant_total'].sum()
-        CtoA_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "A")), 'variant_total'].sum()
-        AtoT_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "T")), 'variant_total'].sum()
-        TtoA_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "A")), 'variant_total'].sum()
-        CtoG_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "G")), 'variant_total'].sum()
-        GtoC_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "C")), 'variant_total'].sum()
-        GtoT_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "T")), 'variant_total'].sum()
-        TtoG_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "G")), 'variant_total'].sum()
-        unique_variants = len(vcf)
-        report.loc[report['sample'] == sample_name, ['unique_variants']] = unique_variants
+            print("No virus gene annotations available for that virus! Please check that you have the correct virus specified.")
+        if (length == 0):
+            print("No variants detected in input VCF file!")
+            variant_nts = 0
+            transversion_nts = 0
+            transition_nts = 0
+            AtoG_nts = 0
+            GtoA_nts = 0
+            CtoT_nts = 0
+            TtoC_nts = 0
+            AtoC_nts = 0
+            CtoA_nts = 0
+            AtoT_nts = 0
+            TtoA_nts = 0
+            CtoG_nts = 0
+            GtoC_nts = 0
+            GtoT_nts = 0
+            TtoG_nts = 0
+        if (length > 0):
+            variant_nts = vcf['variant_total'].sum()
+            transition_nts = vcf.loc[vcf['variant_type'] == "transition", 'variant_total'].sum()
+            transversion_nts = vcf.loc[vcf['variant_type'] == "transversion", 'variant_total'].sum()
+            AtoG_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "G")), 'variant_total'].sum()
+            GtoA_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "A")), 'variant_total'].sum()
+            CtoT_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "T")), 'variant_total'].sum()
+            TtoC_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "C")), 'variant_total'].sum()
+            AtoC_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "C")), 'variant_total'].sum()
+            CtoA_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "A")), 'variant_total'].sum()
+            AtoT_nts = vcf.loc[((vcf['reference'] == "A") & (vcf['variant'] == "T")), 'variant_total'].sum()
+            TtoA_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "A")), 'variant_total'].sum()
+            CtoG_nts = vcf.loc[((vcf['reference'] == "C") & (vcf['variant'] == "G")), 'variant_total'].sum()
+            GtoC_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "C")), 'variant_total'].sum()
+            GtoT_nts = vcf.loc[((vcf['reference'] == "G") & (vcf['variant'] == "T")), 'variant_total'].sum()
+            TtoG_nts = vcf.loc[((vcf['reference'] == "T") & (vcf['variant'] == "G")), 'variant_total'].sum()
+        report.loc[report['sample'] == sample_name, ['unique_variants']] = length
         report.loc[report['sample'] == sample_name, ['variant_nts']] = variant_nts
         report.loc[report['sample'] == sample_name, ['transition_nts']] = transition_nts
         report.loc[report['sample'] == sample_name, ['transversion_nts']] = transversion_nts
