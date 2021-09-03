@@ -1,4 +1,4 @@
-# Viral Variant Detection
+# CoVariant (Viral Variant Detection)
 Detection, annotation, and quantification of viral variants in short-read Illumina RNA-seq datasets.
 
 ## Requirements
